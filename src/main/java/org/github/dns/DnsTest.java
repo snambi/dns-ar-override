@@ -27,6 +27,11 @@ public class DnsTest {
 	public static final void main( String[] args ) {
 	
 		System.out.println("Beging DNS test");
+		
+		/** 
+		 * Set the following system properties.
+		 * http://docs.oracle.com/javase/1.5.0/docs/guide/net/properties.html
+		 */
 		System.setProperty("sun.net.spi.nameservice.provider.1", "dns,dnsjava");
 		Security.setProperty("networkaddress.cache.ttl", "0"); 
 		
