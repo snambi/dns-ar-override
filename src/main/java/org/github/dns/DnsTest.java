@@ -29,7 +29,14 @@ public class DnsTest {
 	public static final void main( String[] args ) {
 	
 		System.out.println("Beging DNS test");
+		
+		/** 
+		 * Set the following system properties.
+		 * http://docs.oracle.com/javase/1.5.0/docs/guide/net/properties.html
+		 */
 		System.setProperty("sun.net.spi.nameservice.provider.1", "dns,dnsjava");
+		
+		// set the security settings
 		Security.setProperty("networkaddress.cache.ttl", "0"); 
 		
 		try {
@@ -39,6 +46,7 @@ public class DnsTest {
 			System.out.println("ip address: " + lwnAddress.getHostAddress() );
 			System.out.println("INET " + lwnAddress.toString() + "\n" );
 			
+
 			Name lwnname = new Name(LWN + ".");
 			
 			// represention of LLVM ip address as a byte array
@@ -50,21 +58,30 @@ public class DnsTest {
 			// change the ARecord of LWN to KERNEL 
 			Record arec = new ARecord( lwnname, Type.A, 999999999, kernelAddress);
 						
+			// print the default lookup cache for examining its contents			
 			System.out.println("Cache: " + Lookup.getDefaultCache(Type.A) );
+
+			// flush the contents of existing cache to remove all entries
 			Lookup.getDefaultCache(Type.A).flushName(lwnname);
+
+
 			System.out.println("Cache: " + Lookup.getDefaultCache(Type.A) );
 			
+			// Add the new A-Record into the cache
 			Lookup.getDefaultCache(Type.A).addRecord(arec, Credibility.NORMAL, new DnsTest() );
 			
 			Cache c = Lookup.getDefaultCache(Type.A);
+			// print the default lookup cache for examining its contents			
 			System.out.println("Cache: " + Lookup.getDefaultCache(Type.A) );
 			
 			
-			
+			//TEST 1 : Use InetAddress to find the ip address
 			InetAddress address1 = InetAddress.getByName( LWN );
 			System.out.println("ip address: " + address1.getHostAddress() );
 			System.out.println("INET " + address1.toString() );
 	
+			// TEST 2 : Use apache HttpClient to connect to google.com.
+			//          this will actually connect to yahoo and show the results.
 			String url = "http://" + LWN;
 			
 			HttpClient client = HttpClientBuilder.create().build();
