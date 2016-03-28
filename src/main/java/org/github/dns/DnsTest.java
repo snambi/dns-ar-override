@@ -23,6 +23,8 @@ import org.xbill.DNS.Type;
 public class DnsTest {
 
 	static final String GOOG = "google.com";
+	static final String LWN = "lwn.net"; // 45.33.94.129
+	static final String LLVM = "llvm.org"; // 192.17.58.186
 
 	public static final void main( String[] args ) {
 	
@@ -32,20 +34,24 @@ public class DnsTest {
 		
 		try {
 			
-			InetAddress address = InetAddress.getByName( GOOG );
+			InetAddress lwnAddress = InetAddress.getByName( LWN );
 			
-			System.out.println("ip address: " + address.getHostAddress() );
-			System.out.println("INET " + address.toString() + "\n" );
+			System.out.println("ip address: " + lwnAddress.getHostAddress() );
+			System.out.println("INET " + lwnAddress.toString() + "\n" );
 			
-			Name gName = new Name(GOOG + ".");
-			byte[] yAddr = new byte[]{ 98, (byte) 138, (byte) 253, 109};
-			InetAddress yahooAddress = InetAddress.getByAddress( yAddr);
+			Name lwnname = new Name(LWN + ".");
 			
-			// change the ARecord 
-			Record arec = new ARecord( gName, Type.A, 999999999, yahooAddress);
+			// represention of LLVM ip address as a byte array
+			byte[] yAddr = new byte[]{  (byte)  192, (byte) 17, (byte) 58, (byte) 186};
+			InetAddress kernelAddress = InetAddress.getByAddress( yAddr);
+			
+			
+			
+			// change the ARecord of LWN to KERNEL 
+			Record arec = new ARecord( lwnname, Type.A, 999999999, kernelAddress);
 						
 			System.out.println("Cache: " + Lookup.getDefaultCache(Type.A) );
-			Lookup.getDefaultCache(Type.A).flushName(gName);
+			Lookup.getDefaultCache(Type.A).flushName(lwnname);
 			System.out.println("Cache: " + Lookup.getDefaultCache(Type.A) );
 			
 			Lookup.getDefaultCache(Type.A).addRecord(arec, Credibility.NORMAL, new DnsTest() );
@@ -53,11 +59,13 @@ public class DnsTest {
 			Cache c = Lookup.getDefaultCache(Type.A);
 			System.out.println("Cache: " + Lookup.getDefaultCache(Type.A) );
 			
-			InetAddress address1 = InetAddress.getByName( GOOG );
+			
+			
+			InetAddress address1 = InetAddress.getByName( LWN );
 			System.out.println("ip address: " + address1.getHostAddress() );
 			System.out.println("INET " + address1.toString() );
 	
-			String url = "http://" + GOOG;
+			String url = "http://" + LWN;
 			
 			HttpClient client = HttpClientBuilder.create().build();
 			HttpGet request = new HttpGet(url);
@@ -67,20 +75,23 @@ public class DnsTest {
 			System.out.println("Response Code : " 
 		                + response.getStatusLine().getStatusCode());
 
+		
 			BufferedReader rd = new BufferedReader(new InputStreamReader(response.getEntity().getContent()));
 
 			StringBuffer result = new StringBuffer();
 			String line = "";
+			
 			while ((line = rd.readLine()) != null) {
 				result.append(line);
 			}
+			
+			System.out.println("Result: " + result );
 			
 		} catch (UnknownHostException e) {
 			e.printStackTrace();
 		} catch (TextParseException e) {
 			e.printStackTrace();
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}			
 	}
