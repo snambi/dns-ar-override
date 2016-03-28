@@ -1,4 +1,4 @@
-# Override DNS ARecord in Java code.
+# Override DNS A-Record in Java
 
 Suppose your code needs to connect to "api.company.com" for accessing services.
 The "api.company.com" is hardcoded in a jar which you cannot override directly.
