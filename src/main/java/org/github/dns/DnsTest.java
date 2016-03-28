@@ -33,6 +33,8 @@ public class DnsTest {
 		 * http://docs.oracle.com/javase/1.5.0/docs/guide/net/properties.html
 		 */
 		System.setProperty("sun.net.spi.nameservice.provider.1", "dns,dnsjava");
+		
+		// set the security settings
 		Security.setProperty("networkaddress.cache.ttl", "0"); 
 		
 		try {
@@ -43,25 +45,39 @@ public class DnsTest {
 			System.out.println("INET " + address.toString() + "\n" );
 			
 			Name gName = new Name(GOOG + ".");
+			
+			/* 
+			 * Find the ip address of yahoo.com by nslookup or ping.
+			 * Use that ipaddress in the following line
+			*/
 			byte[] yAddr = new byte[]{ 98, (byte) 138, (byte) 253, 109};
 			InetAddress yahooAddress = InetAddress.getByAddress( yAddr);
 			
-			// change the ARecord 
+			// create a new ARecord where "google.com" points to yahoo.com ip address
 			Record arec = new ARecord( gName, Type.A, 999999999, yahooAddress);
 						
+			// print the default lookup cache for examining its contents			
 			System.out.println("Cache: " + Lookup.getDefaultCache(Type.A) );
+			
+			// flush the contents of existing cache to remove all entries
 			Lookup.getDefaultCache(Type.A).flushName(gName);
 			System.out.println("Cache: " + Lookup.getDefaultCache(Type.A) );
 			
+			// Add the new A-Record into the cache
 			Lookup.getDefaultCache(Type.A).addRecord(arec, Credibility.NORMAL, new DnsTest() );
 			
 			Cache c = Lookup.getDefaultCache(Type.A);
+			// print the default lookup cache for examining its contents			
 			System.out.println("Cache: " + Lookup.getDefaultCache(Type.A) );
 			
+			// TEST 1 : Use InetAddress to find the ip address
 			InetAddress address1 = InetAddress.getByName( GOOG );
 			System.out.println("ip address: " + address1.getHostAddress() );
 			System.out.println("INET " + address1.toString() );
 	
+	
+			// TEST 2 : Use apache HttpClient to connect to google.com.
+			//          this will actually connect to yahoo and show the results.
 			String url = "http://" + GOOG;
 			
 			HttpClient client = HttpClientBuilder.create().build();
