@@ -10,7 +10,8 @@ In such a situation, it is possible have a DNS A Record embedded in the JVM, whe
 This doesn't change /etc/hosts file or nameserver settings.
 Simply the namelookup layer in the JVM layer has a different ARecord for "api.company.com".
 
-Please see the class DnsTest for details of overriding
+Please see the class DnsTest for details of overriding.
+
 https://github.com/snambi/dns-ar-override/blob/master/src/main/java/org/github/dns/DnsTest.java
 
 
